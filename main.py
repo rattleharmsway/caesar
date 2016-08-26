@@ -112,6 +112,10 @@ def escape_html(s):
     return cgi.escape(s, quote = True)
 
 def escape_html_practice(s):
+    #s = s.replace("&", "&amp;")
+    #s = s.replace(">", "&gt;")
+    #s = s.replace("<", "&lt;")
+    #s = s.replace('"', "&quot;")
     s = s.replace("&", "&amp;")
     s = s.replace(">", "&gt;")
     s = s.replace("<", "&lt;")
@@ -136,8 +140,12 @@ def caesar(string, shift):
     for ch in string:
         if ch.isalpha():
             stayInAlphabet = ord(ch) + shift
-            if stayInAlphabet > ord('z'):
-                stayInAlphabet -= 26
+            if ch.islower():
+                if stayInAlphabet > ord('z'):
+                    stayInAlphabet -= 26
+            elif ch.isupper():
+                    if stayInAlphabet > ord('Z'):
+                        stayInAlphabet -= 26
             finalLetter = chr(stayInAlphabet)
             cipherText += finalLetter
         else:
@@ -153,10 +161,10 @@ class MainHandler(webapp2.RequestHandler):
         self.write_form()
 
     def post(self):
-        user_input = self.request.get(escape_html('rot13'))
+        user_input = escape_html(self.request.get('rot13'))
         cypher = self.request.get('cypher')
 
-        if is_digit(cypher):
+        if is_digit(cypher) or int(cypher) == 0:
             userinput = caesar(user_input, int(cypher))
             self.write_form("", userinput, cypher)
         else:
